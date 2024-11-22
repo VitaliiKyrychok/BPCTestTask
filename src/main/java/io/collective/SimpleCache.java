@@ -26,7 +26,7 @@ public class SimpleCache {
     }
 
     public void put(Object key, Object value, int retentionInMillis) {
-        Integer cacheIndex = getFirstFreeIndex(clock.millis());
+        Integer cacheIndex = getFirstFreeIndex(clock.millis(), key);
         if (cacheIndex == null) {
             cacheIndex = cache.length;
             increaseCacheSize();
@@ -70,15 +70,20 @@ public class SimpleCache {
         return (simpleCacheEntry != null && simpleCacheEntry.getExpirationInMillis() > clock.millis());
     }
 
-    private Integer getFirstFreeIndex(long currentTimeInMills) {
-        Integer result = null;
+    private Integer getFirstFreeIndex(long currentTimeInMills, Object newKey) {
+        Integer emptyIndex = null;
+        Integer sameKeyIndex = null;
         for (int i = 0; i < cache.length; i++) {
             if (cache[i] == null || cache[i].getExpirationInMillis() < currentTimeInMills) {
-                result = i;
-                break;
+                emptyIndex = i;
+            } else {
+                if (cache[i].getKey().equals(newKey)) {
+                    sameKeyIndex = i;
+                    break;
+                }
             }
         }
-        return result;
+        return (sameKeyIndex != null) ? sameKeyIndex : emptyIndex;
     }
 
     private SimpleCacheEntry[] getNewCache(int capacity) {

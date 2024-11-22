@@ -16,7 +16,7 @@ public class SimpleCacheExtendedTest {
         cache.put("aKey", "aValue", 2000);
         cache.put("anotherKey", "anotherValue", 4000);
         cache.put("aKey", "aValue2", 3000);
-        assertEquals(3, cache.size());
+        assertEquals(2, cache.size());
     }
 
     @Test
