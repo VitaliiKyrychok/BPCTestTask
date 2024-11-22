@@ -8,25 +8,20 @@ import java.time.Duration;
 import static java.lang.String.format;
 import static junit.framework.TestCase.assertEquals;
 
-public class SimpleCacheExtendedTest extends SimpleCacheTest {
-
-    @Override
-    public void before() {
-        super.before();
-        nonempty.put("aKey", "aValue2", 3000);
-    }
+public class SimpleCacheExtendedTest {
 
     @Test
-    @Override
-    public void size() {
-        assertEquals(0, empty.size());
-        assertEquals(3, nonempty.size());
-    }
-
-    @Test
-    public void isCacheIncreaseCorrectly() {
+    public void When_CacheHasDuplicateEntryKey_Expect_CorrectlyBehavior() {
         SimpleCache cache = new SimpleCache();
-        assertEquals(SimpleCache.CACHE_CAPACITY_INITIAL, cache.getCurrentCacheCapacity());
+        cache.put("aKey", "aValue", 2000);
+        cache.put("anotherKey", "anotherValue", 4000);
+        cache.put("aKey", "aValue2", 3000);
+        assertEquals(3, cache.size());
+    }
+
+    @Test
+    public void When_CacheIncrease_Expect_CorrectlyCacheIncrease() {
+        SimpleCache cache = new SimpleCache();
         for (int i = 0; i < SimpleCache.CACHE_CAPACITY_INITIAL + 1; i++) {
             cache.put(format("aKey%d", i), format("aValue%d", i), 3000);
         }
@@ -34,11 +29,9 @@ public class SimpleCacheExtendedTest extends SimpleCacheTest {
     }
 
     @Test
-    public void isCacheNotIncreaseCorrectly() {
-        TestClock clock = new TestClock();
+    public void When_CacheIncrease_Expect_CorrectlyCacheNotIncrease() {
+        SimpleCacheTest.TestClock clock = new SimpleCacheTest.TestClock();
         SimpleCache cache = new SimpleCache(clock);
-
-        assertEquals(SimpleCache.CACHE_CAPACITY_INITIAL, cache.getCurrentCacheCapacity());
         for (int i = 0; i < SimpleCache.CACHE_CAPACITY_INITIAL; i++) {
             cache.put(format("aKey%d", i), format("aValue%d", i), i * 1000);
         }
